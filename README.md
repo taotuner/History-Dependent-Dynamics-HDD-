@@ -22,6 +22,8 @@ Evidence that a system depends on its history should not automatically be interp
 
 Each construct requires its own experimental evidence. None implies the next. None implies consciousness.
 
+The framework has three domain-specific companions — HDD-ISA for artificial architectures, HDD-ESA for engineered dynamical systems, and HDD-BIO for biological systems — which translate the same inferential structure into the interfaces, estimands, and reporting requirements appropriate to each substrate.
+
 Repository Contents
 text
 hdd/
@@ -31,10 +33,12 @@ hdd/
 ├── paper/
 │   ├── History-Dependent_Dynamics_HDD.pdf       # Main manuscript (2026a)
 │   ├── HDD_ISA_AI_Architectures.pdf             # Interface specification (2026b)
+│   ├── HDD_ESA_Engineering_Systems.pdf          # Engineering companion (2026b2)
 │   ├── Test_of_Functional_Self_Reference_CIV.pdf  # C-IV experiment (2026c)
 │   ├── History_Dependent_Ontology_HDO.pdf       # HDO (2026d)
 │   ├── HDD_Ethical_Framework.pdf                # Ethics (2026e)
 │   ├── Five_HDD_Constructs_Single_Loop.pdf      # Unified system (2026f)
+│   ├── HDD_BIO_Reporting_Framework.pdf          # Biological companion (2026g)
 │   └── HDD_Benchmark_Appendix.pdf               # Benchmark appendix
 ├── benchmark/
 │   ├── hdd_benchmark_v1.py                      # Construct I benchmark
@@ -58,15 +62,19 @@ hdd/
 └── docs/
     └── api_reference.md                         # Function documentation
 Series Overview
-The HDD series comprises six documents:
+The HDD series comprises eight documents:
 
 #	Document	DOI	Scope
 2026a	HDD — Methodological Framework	10.5281/zenodo.21955745	Framework, Construct I benchmark
 2026b	HDD-ISA — AI Architectures for Causal Discriminations	10.5281/zenodo.22060143	Interface spec for AI architectures
+2026b2	HDD-ESA — Engineering Systems Architecture	10.5281/zenodo.22313802	Causal-discrimination tests for physical control systems
 2026c	C-IV — A Test of Functional Self-Reference	10.5281/zenodo.22729688	Blind intervention test
 2026d	HDO — History-Dependent Ontology	10.5281/zenodo.22683226	Ontological interpretation
-2026e	HDD Ethical Framework	pending	Precautionary protocol
-2026f	Five HDD Constructs in a Single Loop	pending	Unified system, all five constructs coexisting
+2026e	HDD Ethical Framework	10.5281/zenodo.22178854	Precautionary protocol
+2026f	Five HDD Constructs in a Single Loop	10.5281/zenodo.22735835	Unified system, all five constructs coexisting
+2026g	HDD-BIO — Biological Reporting and Experimental Framework	10.5281/zenodo.22980267	Biological companion: reporting standards, estimands, and applicability-bounded CO protocol
+Family structure. HDD is the root document. HDD-ISA, HDD-ESA, and HDD-BIO are its three domain-specific companions, each translating the same constructs into a different class of system. HDO supplements HDD-BIO specifically, as a philosophical companion to the biological case. The position of the HDD Ethical Framework in this tree is left as an open question.
+
 Key Results
 Construct I Benchmark (2026a)
 System	HDD-I	Relative Improvement (τ=10)	95% CI	p-value
@@ -88,6 +96,25 @@ C-III	Twin divergence (narrow reading)	13.0125 ± 0.3261	Supported
 C-IV	Blind identification accuracy	100% (20/20)	Supported
 C-V	Gain from correct identification	+0.5857 ± 0.0941	Supported
 Criterion applicability test. The HDD Ethical Framework's Criterion of Organizational Coherence (CO, §4.2) was tested against a computational system constructed to be in the class the framework itself designates as outside its scope. Result: an individuation metric constructed from HDO Thesis 4 does not track functional collapse, and in fact increases under full kill (0.4845 → 0.5503, p = 0.0022) even as viability and twin divergence drop to zero. This confirms the framework's own expectation in §4.5 and grounds the operationalization gap identified in §4.4.
+
+HDD-BIO (2026g)
+HDD-BIO is a proposed reporting and experimental framework, not a benchmark. It provides:
+
+Concrete, prespecified estimands for C-I (§5.0) and C-II (§6.0).
+
+A minimal statistical specification for C-I (§5.1).
+
+Mandatory residual-latent sensitivity for C-II causal claims (§6.3).
+
+Three-condition operationalizations of C-IV (IV-1 ∧ IV-2 ∧ IV-3) and C-V (V1 ∧ V2 ∧ V3 with a self-vs-world control).
+
+An executable eight-step protocol for organizational coherence that separates organizational necessity from global damage (§10.1).
+
+A worked retrospective mapping of the C-I/C-II checklist onto a published planarian study (§6.2), classifying the existing result as not demonstrated for C-I and underdetermined for C-II.
+
+A dedicated validation section (§15) specifying what would count as validating the framework itself.
+
+No new biological experiments are run in HDD-BIO; it is a candidate reporting discipline awaiting independent application.
 
 Installation
 bash
@@ -188,41 +215,60 @@ That the Criterion of Organizational Coherence is wrong (only that one operation
 Scope of Validation
 What Has Been Demonstrated
 ✅ Construct I — History-Dependent Predictive Structure (standalone benchmark, 2026a; and held-out with placebo, 2026f)
+
 ✅ Construct II — Causal Trajectory Dependence (twin divergence, 2026f)
+
 ✅ Construct III — Feedback Recurrence (narrow reading: action-contingent divergence only; not the HDD-ISA §11 specification, 2026f)
+
 ✅ Construct IV — Functional Self-Reference (blind intervention, 2026c; extended to four-variable system, 2026f)
+
 ✅ Construct V — Self-Modeling (gain from correct identification, 2026f)
+
 ✅ Construct coexistence — All five in a single loop without interference (2026f)
+
 ✅ Criterion applicability — HDD Ethical Framework §4.5 empirically grounded (2026f)
 
 What Has NOT Been Demonstrated
 ❌ HDD as a whole — Not validated across a diversity of architectures
+
 ❌ C-III under HDD-ISA §11 specification — Requires independently bypassable feedback pathway with capacity-matched control; current implementation uses only the narrow reading
+
 ❌ Scaling — State space is F₁₃³; extension to GF(169) or larger fields untested
+
 ❌ Robustness across environments — Only one environment tested (Rule 30 CA)
+
 ❌ Operationalization of CO — One natural operationalization tested and found inadequate; the criterion itself remains intact but not operationalized
+
+❌ Biological validation of HDD-BIO — Retrospective mapping of one published study (§6.2); no independent application or inter-observer replication attempted
+
 ❌ Consciousness, sentience, agency, moral status — No claims made or supported
 
 Relations Between Documents
 Document	Relation to HDD
 2026a (HDD)	Framework. Defines the five constructs and their evidential conditions.
 2026b (HDD-ISA)	Interface specification. Translates constructs into architectural requirements. Not exercised in this repository's benchmarks.
+2026b2 (HDD-ESA)	Engineering companion. Translates constructs into five causal-discrimination tests for physical control systems (motion, thermal, fluid, chemical, power), with design-for-testability rules and shared reporting categories.
 2026c (C-IV)	Isolation test of Construct IV. Establishes the blind intervention mechanism.
-2026d (HDO)	Ontological interpretation. Not a construct; provides the Individuation Criterion operationalized in 2026f's CO test.
+2026d (HDO)	Ontological interpretation. Not a construct; provides the Individuation Criterion operationalized in 2026f's CO test. Supplements HDD-BIO.
 2026e (Ethics)	Precautionary protocol. The Criterion of Organizational Coherence §4.2 is tested in 2026f; the result matches §4.5's expectation.
 2026f (Unified)	Joint instantiation. Demonstrates coexistence and grounds the framework's own scope assessment.
+2026g (HDD-BIO)	Biological companion. Translates the constructs into reporting standards, concrete estimands, and an applicability-bounded CO protocol for living systems. Ontologically agnostic: can be applied with or without the HDO interpretation.
 References
 HDD (2026a): Taotuner. History-Dependent Dynamics (HDD): A Methodological Framework for Disentangling History Dependence, Recurrence, Self-Reference, and Self-Modeling in Dynamical Systems. Zenodo. DOI: 10.5281/zenodo.21955745
 
 HDD-ISA (2026b): Taotuner. HDD-ISA — AI Architectures for Causal Discriminations. Zenodo. DOI: 10.5281/zenodo.22060143
 
+HDD-ESA (2026b2): Taotuner. HDD-ESA — Engineering Systems Architecture. Zenodo. DOI: 10.5281/zenodo.22313802
+
 C-IV (2026c): Taotuner. A Test of Functional Self-Reference (C-IV). Zenodo. DOI: 10.5281/zenodo.22729688
 
 HDO (2026d): Taotuner. History-Dependent Ontology (HDO). Zenodo. DOI: 10.5281/zenodo.22683226
 
-Ethics (2026e): Taotuner. HDD Ethical Framework. Zenodo.
+Ethics (2026e): Taotuner. HDD Ethical Framework. Zenodo. DOI: 10.5281/zenodo.22178854
 
-Unified (2026f): Taotuner. Five HDD Constructs in a Single Loop: A Computational Study of Construct Coexistence and Criterion Applicability. Zenodo.
+Unified (2026f): Taotuner. Five HDD Constructs in a Single Loop: A Computational Study of Construct Coexistence and Criterion Applicability. Zenodo. DOI: 10.5281/zenodo.22735835
+
+HDD-BIO (2026g): Taotuner. HDD-BIO — A Proposed Reporting and Experimental Framework for Discriminating Forms of Biological History Dependence. Zenodo. DOI: 10.5281/zenodo.22980267
 
 Appendix: Taotuner. (2026). Computational Benchmark — Construct I: Full Protocol Details, Extended Results, and Source Code.
 
@@ -240,10 +286,11 @@ Under the following terms:
 Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made.
 
 Citation
-If you use this framework or code in your research, please cite the specific document(s) used (2026a through 2026f, each with its own DOI).
+If you use this framework or code in your research, please cite the specific document(s) used (2026a through 2026g, each with its own DOI).
 
 Acknowledgments
 This work was developed with the assistance of AI-based language tools used for literature exploration, structural organization, drafting, critical discussion, methodological critique, and language refinement. All conceptual decisions, methodological commitments, interpretation of evidence, revisions, and responsibility for the final work remain with the author.
 
 Date: September 2026
-Changes since v1.0: Added 2026b–2026f documents to the series; updated validation status for Constructs II–V; added unified system benchmark; updated scope section to reflect current state.
+
+Changes since v1.0: Completed the document series with all eight DOIs published, including HDD-ESA (engineering companion), HDD Ethical Framework, the unified five-construct study, and HDD-BIO (biological companion). Updated validation status for Constructs II–V. Restructured family tree to reflect domain companions (ISA, ESA, BIO) with HDO branching from HDD-BIO. Removed all "pending" markers — every document in the series now has a public DOI.
