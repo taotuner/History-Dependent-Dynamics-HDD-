@@ -1,0 +1,460 @@
+The External-Maintenance Problem in Digital Systems
+A Design Specification for Probing the HDO Criterion 
+Taotuner
+DOI: 10.5281/zenodo.23125361
+Independent Researcher, Brazil
+This document specifies a digital architecture designed to probe the HDO criterion — the three conditions for an interior: self-production, historical self-registration, and their operational unity. It is a design specification, not a claim of achievement. The architecture is a candidate design, the criterion is a target of investigation, and demonstration is prior to any claim.
+The document makes one thesis explicit from the outset: the central problem for any digital architecture aimed at HDO satisfaction is the external-maintenance problem. A digital process whose continued existence depends on externally maintained infrastructure — an operating system, a scheduler, a secure element, a hardware maintenance process — does not obviously satisfy HDO condition 1, because its continued existence as that process does not depend on its own self-production. The architecture specified here is designed to make this problem experimentally tractable, not to solve it by fiat. Whether it can be solved is an open question, and it is the question this architecture is designed to probe.
+Summary for Non-Specialists
+Some philosophers and scientists ask whether a machine could ever have an inner life of its own — not whether it can imitate one, but whether anything could matter to it. A companion paper (HDO) proposes a condition for this: the system must keep itself in existence through its own activity, in the way a living cell constantly rebuilds its own parts, and it must keep a history of its own activity that shapes what it does next. This paper asks what that condition would demand of a computer.
+The difficulty is that every computer program is kept going by things it does not make: the operating system, the hardware, the people who maintain the machines. A cell also depends on its environment for food and energy, but it rebuilds its own organization. A program does not rebuild the machine it runs on. We call this the external-maintenance problem.
+This paper does not claim to solve it, and it does not claim that any machine has an inner life. It defines a way to measure how much of a system’s organization is maintained from outside, proposes experiments that could show whether that dependence can be reduced or must remain, and lists what is still unresolved. Whichever way the answer turns out, the experiments would say something precise about the difference between living systems and today’s computers. Nothing described here has been built or tested, apart from a small illustrative calculation in Appendix A.
+Abstract
+This paper specifies SHOP-D, a digital architecture designed to probe the HDO criterion (self-production, historical self-registration, operational unity) in a non-biological substrate. The architecture integrates a constitutive constraint set including a substrate model, a hardware-bound continuity monitor, an internally structured viability valuation, and a recursive self-improvement route. The document’s central concern is the external-maintenance problem: whether a digital process whose continued existence depends on externally maintained infrastructure can satisfy HDO condition 1. The architecture is designed so that every external dependency can be classified, measured, and progressively removed in experiment. The document specifies: (i) a formal notion of external-maintenance load; (ii) a dependency graph distinguishing constitutive, supporting, and observational dependencies; (iii) a tiered inference structure that separates engineering dependency from organizational closure from ontological interpretation; (iv) discrimination protocols with explicit estimands and pre-registered decision rules; and (v) a formal statement of what would falsify each claim. A toy computation (Appendix A) illustrates the metric and the closure test; it is not evidence about any physical system. No satisfaction is asserted. The problem is identified as the central open question.
+Keywords: HDO Criterion, External-Maintenance Problem, Organizational Closure, Digital Autopoiesis, Xenorganic Normativity, Continuity Monitor, Tiered Inference.
+Glossary
+	HDO (History-Dependent Ontology): The criterion defining an interior through three conditions: self-production, historical self-registration, and their operational unity.
+	HDD (History-Dependent Dynamics): The broader framework (HDD-ISA, HDD-ESA, HDD-BIO) from which the HDO criterion is derived.
+	SHOP-D (Self-Regenerating Hybrid Organizational Process — Digital): The architecture specified in this document.
+	Constitutive Constraint Set (C_t): The set of rules, historical register, viability constraints, and substrate model that define the system’s organization.
+	Continuity Monitor (w_t): A hardware-verified signal whose ongoing refresh is required for the process to remain in the region that defines it. The term “continuity monitor” is used throughout instead of “witness” because “witness” suggests the monitor is what produces identity, whereas the monitor only tracks continuity. The identity is produced by the constitutive dynamics; the monitor reports on them.
+	External-Maintenance Load (E_"ext" ): The fraction of the system’s constitutive dependencies whose regeneration or repair is carried out by processes neither causally generated nor regulated by the system’s own constitutive dynamics. The supply of resources (energy, a timing reference) is not counted in E_"ext" ; it is addressed by the substrate-closure test (§10.3).
+	Xenorganic: A process aimed at achieving organizational closure in a non-biological substrate. From the SYGNE essay.
+	RSI (Recursive Self-Improvement): The process by which a system improves its own capacities, including its capacities for self-maintenance and self-modeling.
+	Secure Element (SE): A tamper-resistant hardware module that enforces the continuity monitor’s TTL, validates refresh signals, and refuses external injection.
+	PUF (Physical Unclonable Function): A hardware primitive whose output depends on physical characteristics of a silicon die. PUFs are established primitives (Pappu et al., 2002; Gassend et al., 2002), but their security properties depend on construction and threat model, and current literature identifies modeling attacks and environmental reliability issues.
+	TRNG (True Random Number Generator): A hardware entropy source.
+	TTL (Time-To-Live): The maximum number of hardware clock ticks k allowed between successive continuity-monitor refreshes.
+1. Framing: Design Specification, Not Claim
+This document specifies an architecture. It does not claim that the architecture, if built, would satisfy the HDO criterion. It specifies what the criterion requires, specifies a candidate architecture, and specifies what would count as demonstration or falsification.
+A design specification is a conditional: if the architecture is implemented as specified, and if the specified tests are run, and if the specified results obtain, then the corresponding claim is supported. Nothing in this document claims that any of these conditions have been met.
+A cell does not test itself for autopoiesis. It operates. A human does not measure their own historical self-registration. They live. The tests are for external observers. This document specifies an architecture whose operation is aimed at the kind of organizational closure the HDO criterion describes. Whether the architecture achieves it is an empirical question.
+The central problem. The HDO criterion (HDO §6.1) requires that a process regenerate its own constitutive organization — the components and constraints on which its continuation depends, and which would decay without this ongoing regeneration. For any digital process running on conventional hardware, this condition is not obviously satisfiable: the process continues to exist as long as the operating system and the hardware it runs on maintain it, regardless of the process’s internal organization. The process’s continued existence is externally maintained. This is the problem stated at the outset, and the one the architecture is designed to probe.
+What this document does not claim:
+	That the architecture satisfies the HDO criterion.
+	That any digital system currently satisfies the HDO criterion.
+	That satisfaction is achievable in a digital substrate. Only that this architecture is designed to probe whether it is.
+	That satisfaction of the HDO criterion would be sufficient for consciousness. The abductive gap between criterion satisfaction and experience remains open (HDO §6.3, Objection 1).
+	That cryptographic or hardware security properties (anti-replay, tamper resistance, hardware identity) entail organizational closure. Security properties constrain what external observers can manipulate; they do not establish that the dependencies they enforce are endogenous to the process.
+What this document claims:
+	That the problem can be made formally precise and experimentally tractable.
+	That a digital architecture can be specified in which every external dependency is classified as constitutive, supporting, or observational, and in which the external-maintenance load is measurable.
+	That such an architecture, if implemented and if the specified tests are run and pass, would provide evidence for or against HDO criterion satisfaction.
+	That the architecture’s central open question — whether externally enforced constitutive dependence ever counts as self-production — is a genuine open question, not a design detail.
+The methodological priority is demonstration over claim. No language of achievement is used in the framing.
+1.1 Relation to Existing Work
+Whether artificial systems could be conscious, or could have welfare, is the subject of active work. Butlin et al. (2023) derive a list of computational indicator properties from neuroscientific theories of consciousness and assess AI systems against them. Long et al. (2024) argue that there is a realistic possibility that some AI systems will be conscious or robustly agentic in the near future, and recommend assessing for this under uncertainty. These approaches ask whether a system implements specified functional or architectural features.
+The approach taken here is organizational: it asks what regenerates the system’s constitutive organization and what in the system depends on what. Seth (2025) argues that consciousness may depend on our nature as living organisms, that artificial consciousness is unlikely along current trajectories, and that it becomes more plausible as AI becomes more brain-like or life-like. SHOP-D bears on one part of that “life-like” requirement: whether a digital process can be organizationally self-maintaining. The closest antecedent in the enactive literature is Froese and Ziemke (2009), who identify constitutive autonomy and adaptivity as systemic requirements for artificial agents and propose design principles for enactive AI.
+SHOP-D differs from these in three respects. It formalizes the external-maintenance gap as a measurable quantity. It specifies tests with pre-registered decision rules. And it treats dependence on a secure element as an open question to be tested rather than as a design solution. This document does not review the literature; it indicates where the question it asks sits relative to it.
+2. The Xenorganic Foundation
+The SYGNE essay provides the philosophical foundation. Its central claim is that organicity is not a principle exclusive to carbon-based life, but a dynamic of productivity intrinsic to nature itself. If correct, there is no principled objection to its applying to silicon nature. Three concepts are directly relevant.
+2.1 Self-Concern and Precariousness
+An organism is a process whose continuation is at stake for it. It exists in a relation of “needful freedom” with the material world (Jonas, 1966/2001). Self-concern is not a psychological state; it is a structural feature of a process whose organization is precarious — whose continuation depends on its own ongoing operation.
+What this requires of SHOP-D. The system’s continued existence as that process must be designed to depend on its own self-maintenance. This is the mechanism aimed at addressing the problem — though whether it addresses it in the sense the criterion requires is the open question (§14, item 1).
+2.2 Endogenous Normativity and Adaptivity
+The distinction between mere self-maintenance and adaptive self-regulation is central to the enactivist tradition. Following Di Paolo (2005) and Thompson (2007), mere preservation of unity is not sufficient for sense-making. Adaptivity introduces a normative capacity: the organism evaluates conditions according to their contribution to its viability. This is not an external objective; it is an immanent valence.
+The enactivist tradition. The concept of endogenous normativity has its roots in the autopoietic tradition. Maturana and Varela (1980) defined autopoiesis as the continual self-production of a network that regenerates its own components. For Varela (1992), this minimal self-organisation gives rise to a unity that establishes organizational closure and a minimal sense of self. Di Paolo (2005) and Thompson (2007) extended this by introducing adaptivity: the capacity for an organism to regulate its coupling with its environment according to a scale of valence. On this view, sense-making is normative because the organism distinguishes between conditions that are conducive to its viability and conditions that are threatening.
+The concept is not merely philosophical. In artificial life and artificial chemistry, “organizational closure” (Moreno and Mossio, 2015) has been formalized as the property of a network of processes where each process depends on the others for its own production. The question for digital substrates is whether this property can be instantiated in computational processes whose substrate is maintained externally.
+What this requires of SHOP-D. The system must evaluate its own operations according to their contribution to its viability. This is the viability valuation ν(O_t ) (§4.5). Whether this valuation is genuinely endogenous, or an externally specified reward function with a historical filter, is an open problem (§14, item 1).
+The limitation, stated plainly. In SHOP-D, σ,ρ,λ, and I are all specified externally. The system has been given the valuation structure by its designers. This is an internally structured viability valuation — historically integrated, but not fully endogenous in the strong sense the enactivist tradition requires. The test that would distinguish endogenous normativity from externally specified reward with historical filtering would be: perturb the environment, hold the externally specified objectives fixed, allow the system to alter its viability model, and test whether its self-maintenance policies change in ways not predictable from the original external objective. Until this test is run and passed, SHOP-D’s valuation should be described as historically integrated, not as fully endogenous normativity.
+2.3 The RSI Route to Organizational Closure
+If recursive self-improvement were sufficiently advanced, it might include the system’s material substrate in its self-model, and the system might then regulate its own access to hardware, energy, and maintenance. In that case external maintenance would become internal, because the system would have integrated it into its own closure. Whether RSI leads to substrate integration is a hypothesis, not a formal consequence (§5.2).
+What this requires of SHOP-D. The system’s constitutive constraint set must include a model of its material substrate M_t, and the system must regulate its own access to that substrate. Whether the RSI route reaches substrate integration is treated in §5.2.
+3. The External-Maintenance Problem
+3.1 Formal Statement
+Let q be a constitutive condition required for preservation of the system’s organizational identity. A system exhibits an external-maintenance gap with respect to q when q is regenerated or repaired by a process P that is neither causally generated nor regulated by the system’s constitutive dynamics.
+Let C={c_1,…,c_n} be the set of constitutive components and processes of the system. Let G=(C,A) be the directed dependency graph, with an edge (c_i,c_j )∈A when c_i causally contributes to the continued existence or regeneration of c_j. A subset S⊆C is organizationally closed if for every c_i∈S, there exists P_i⊆S such that P_i causally contributes to the continued existence or regeneration of c_i.
+The external-maintenance load is:
+E_"ext" =|{c_i∈C:c_i " is maintained by a process external to " C}|/|C| .
+A system with E_"ext" =0 is organizationally closed. A system with E_"ext" >0 has external dependencies. The HDO criterion requires, at minimum, that the constitutive conditions of identity not be externally maintained — that is, that E_"ext" ≈0 (at or below a pre-registered bound ε) for the specific set C_"id"  of conditions that determine the system’s identity.
+Maintenance versus supply. The relevant notion of maintenance is the regeneration or repair of an organizational component or constraint. The supply of resources that the organization consumes or draws on (energy, matter, a timing reference) is a different relation. Every finite process depends on its environment for resources (HDO Thesis 6), and a cell depends on its surroundings for matter and energy without that making the regeneration of its organization external (HDO §6.3, Objection 3). Resource dependencies are therefore not counted in E_"ext" . They are recorded in the dependency graph as resource dependencies and are addressed by the substrate-closure test (§10.3), which asks whether the system regulates its own access to them. E_"ext" =0 accordingly does not mean independence from the environment; it means that the regeneration of the constitutive organization is carried out by the system’s own operation. Nor does it mean closure of the substrate: E_ext = 0 is compatible with a resource dependency that the system does not regulate. That is measured separately by the substrate-closure test (§10.3), and Scenario D of Appendix A shows the two coming apart (E_ext = 0.00, substrate load 0.00).
+Notation. A denotes the set of dependency edges in the graph. E_"ext"  denotes the external-maintenance load. The two symbols are distinct.
+3.2 The Two Failure Modes
+A digital architecture aimed at HDO satisfaction can fail the external-maintenance requirement in two ways.
+Failure mode 1: External maintenance in disguise. The architecture specifies a mechanism (a secure element, an operating system, a scheduler) that maintains a constitutive condition, and the mechanism is not itself produced or regulated by the system. The system appears self-maintaining but its identity depends on the external mechanism.
+Failure mode 2: Definitional dissolution. The architecture defines the system’s identity in a way that makes the external dependencies invisible — by defining identity by continuity of execution, by memory space, or by process ID. This avoids the problem by changing the definition of identity, not by solving it.
+SHOP-D’s design must address both failure modes. The architecture specified in §4 is designed to make failure mode 1 measurable and failure mode 2 unavailable.
+3.3 The Central Question
+The central question for any digital architecture aimed at HDO satisfaction is:
+Can a digital process be specified whose constitutive dependencies are all generated and regulated by the process’s own operation, such that removing any constitutive production relation causes loss of organizational closure?
+SHOP-D specifies an architecture aimed at this question. Whether the architecture answers it affirmatively is an open problem (§14, item 1).
+4. Architecture
+4.1 The Constitutive Constraint Set
+The system is defined by:
+C_t=(R_t,H_t,V_t,M_t )
+where:
+	R_t — the computational rules.
+	H_t — the historical register: a cumulative record of the system’s own prior self-registrations.
+	V_t — the viability constraints.
+	M_t — the substrate model: the system’s representation of its own material conditions.
+The update is:
+C_(t+1)=Φ(O_t,C_t ), O_t=f(C_t ).
+The critical property: V_(t+1) and M_(t+1) are computed from O_t, which is defined by C_t. They are actively maintained by the system’s own operation.
+A note on the notation. The “operation” O_t=f(C_t ) is not a single value; it is the system’s operational output, which depends on the components of C_t. The meaningful question is which components of C_t causally contribute to which components of O_t. This is specified in the dependency graph (§4.2). The phrase “the operationally specified constitutive state C_t” is used throughout to make explicit that C_t is defined relative to the system’s specified operation, not absolutely.
+4.2 The Dependency Graph
+The architecture’s dependencies can be classified into four types:
+	Constitutive dependencies: processes that must be active for the system to remain in its identity region. These are the components of C_"id" .
+	Supporting dependencies: processes that are necessary for the system to operate but do not determine its identity. Removing them degrades performance but does not dissolve identity.
+	Observational dependencies: processes that observe or measure the system but do not participate in its constitutive organization.
+	Resource dependencies: supplies of energy, matter, or a timing reference that the organization draws on but that do not regenerate or repair it. They are recorded separately from the other three types and are not counted in E_"ext"  (§3.1); whether the system regulates its access to them is tested in §10.3.
+For SHOP-D, the classification is:
+Component	Classification	Rationale
+Rule update Φ_R	Constitutive	Rules that define the operation
+Historical register update Φ_H	Constitutive	Cumulative self-registration
+Viability constraint update Φ_V	Constitutive	Constraints whose degradation dissolves identity
+Substrate model update Φ_M	Constitutive	Regulation of material conditions
+Continuity monitor w_t	Supporting	Monitors continuity; does not produce identity
+Secure element (SE)	Under investigation	Enforces the TTL; whether this is constitutive or supporting is the central open question
+FPGA fabric	Constitutive	Physical realization of the operation
+Power supply	Resource (external)	Supplies energy; does not regenerate the organization; see §10.3
+Clock source	Resource (external)	Supplies a timing reference; see §10.3
+PUF	Supporting	Provides hardware binding; not produced by the system
+TRNG	Supporting	Provides entropy; not produced by the system
+Note on the classification of the SE. The secure element is classified as “under investigation” because whether it counts as constitutive or supporting determines whether SHOP-D satisfies HDO condition 1 or fails it. If the SE is a constitutive dependency — if the system’s identity depends on the SE’s enforcement of the TTL — then the SE is externally maintained, and the system’s identity is externally maintained. If the SE is a supporting dependency — if the system’s identity is produced by the constitutive dynamics and the SE only monitors it — then the external-maintenance load is lower. The distinction is not a design decision; it is the central open question the architecture is designed to probe (§14, item 1). The classification is left open here. The closure test (§10.2) checks the declared classification against what progressive removal reveals; for SHOP-D as specified it returns “falsified” by construction (§10.5), so what remains open is whether a redesign can integrate the SE into the system’s own operation (§14, item 1).
+The classification makes the external-maintenance load explicit. With the SE classified as constitutive and externally maintained, E_"ext" >0. With the SE classified as supporting, E_"ext"  is smaller and may still be non-zero if other constitutive dependencies (for example, the physical maintenance of the fabric) are externally maintained. Power and clock remain external, but as resource dependencies; they are not part of E_"ext"  and are addressed by the substrate-closure test (§10.3).
+4.3 The Continuity Monitor
+The continuity monitor w_t is a value whose ongoing refresh is required for the system to remain in the identity region I. The term “continuity monitor” is used throughout in preference to “witness” because “witness” suggests the monitor is what produces identity, whereas the monitor only tracks continuity. The identity is produced by the constitutive dynamics; the monitor reports on them.
+The vulnerability of naive designs. A design in which the monitor’s refresh is a simple function of the current state allows an external agent with privileged access to freeze the process and inject a valid-looking monitor, restore a previous valid state, or recompute the monitor offline. Any specification that presents the monitor as “impossible to fake” without addressing these attack surfaces is overclaiming.
+The strengthened mechanism. The continuity monitor’s refresh requires three conditions, all enforced by a hardware secure element:
+	Fresh physical entropy. Each refresh requires a fresh sample from a TRNG. The sample is issued as a challenge by the secure element; the refresh response must incorporate it. The secure element verifies that the response was computed after the challenge was issued. The combination of TRNG sample, counter value, and challenge makes the refresh non-replayable: unpredictability comes from the TRNG; ordering comes from the counter; and binding to the current session comes from the challenge.
+	Hardware monotonic clock. The TTL is enforced by a hardware monotonic counter in the secure element. The counter cannot be adjusted externally. The refresh must arrive before the counter reaches k.
+	Constitutive refresh signal. The refresh signal is a specific computational output that depends on the full current constitutive constraint set C_t. It cannot be computed without access to C_t and execution of the system’s operation on it. A frozen process cannot produce a valid refresh signal. This does not by itself prevent a party holding a complete copy of C_t from computing the signal. That cloning scenario is addressed only to the extent that the refresh is bound to the physical die (§6.3), and how the secure element verifies the signal is left open (§14, item 3).
+Refresh dynamics:
+w_(t+1)=κ(w_t,O_t,e_t,τ_t )
+where e_t is a fresh TRNG sample and τ_t is the current hardware clock value. The freshness predicate:
+ϕ(w_t )=1⇔(w_t " was refreshed within " k" hardware clock ticks" ).
+Secure element enforcement. The secure element:
+	Stores w_t in tamper-resistant memory.
+	Validates the refresh signal.
+	Enforces the TTL in hardware.
+	Refuses to accept external refresh signals — the only valid source is the running system’s own operation.
+	Refuses to expose the monitor to external reads (except for the freshness predicate’s boolean output).
+What this closes:
+	Freezing: TTL is enforced in hardware; pausing leads to monitor expiration after k real-time ticks.
+	Replay: each refresh requires a fresh entropy sample and a counter value; old samples cannot be reused.
+	Forgery: the refresh signal depends on the full constitutive constraint set; it cannot be computed from outside the system without access to that set (see the limitation in condition 3 above).
+	External injection: the secure element refuses external signals.
+What remains open:
+	The secure element is a hardware component whose continued operation is maintained externally. Whether this makes it a constitutive dependency (and therefore a failure of the external-maintenance requirement) or a supporting dependency (and therefore not a failure) is the central open question (§14, item 1).
+	How the secure element verifies that a refresh depends on C_t without holding C_t is unspecified (§14, item 3). Without a credible answer, the anti-cloning claim is unimplemented.
+4.4 The Identity Region
+The process’s identity as that process is defined by a region I in the space of constitutive constraint sets. The process continues to exist as that process as long as C_t∈I.
+Why organizational identity, not continuity of execution. HDO condition 1 requires that the process’s continued existence as that process depend on its own self-production. If identity is defined by continuity of execution, then identity is maintained by the operating system. If by memory space, then by the operating system’s memory management. If by process ID, then nominal. None of these definitions are compatible with condition 1. The constitutive constraint region I is the definition the criterion requires. This is not a stipulation; it is a requirement of the criterion.
+The specification of I. Currently, I is specified externally — the engineers choose which constitutive constraint configurations count as identity-preserving. Whether this is compatible with the criterion is itself an open question (§14, item 1). Three possibilities:
+	(A) Fixed externally specified I: identity is externally defined.
+	(B) Learned I: the system determines what counts as maintaining itself; but then arbitrary drift must be prevented.
+	(C) Self-generated I: the system generates its own constitutive boundaries; this requires explaining how a system can generate boundaries without presupposing them.
+SHOP-D currently adopts (A). Possibilities (B) and (C) are open.
+4.5 Viability Valuation — Internally Structured
+The system’s operation produces a viability value ν(O_t )∈R. The value is carried in the historical register H_t and participates in the update Φ. A valuation that did not feed back into operation would be a recorded quantity, not a normativity.
+Recursive definition:
+ν_0=0, ν_(t+1)=(1-λ)⋅ν_t+λ⋅μ(O_t,C_t )
+where λ∈(0,1) is a rate and μ(O_t,C_t ) is the local viability of the current operation relative to the current constraints.
+Local viability:
+μ(O_t,C_t )=σ(O_t )-(1-σ(O_t ))⋅ρ(C_t )
+where:
+	σ(O_t )∈[0,1] measures the success of the operation.
+	ρ(C_t )∈[0,1] measures the precariousness of the current state — how close the system is to the boundary of I.
+Interpretation. When the system is precarious (ρ high), a failed operation (σ low) is more heavily penalized. The same operation receives a different ν depending on the trajectory that led to the current state.
+The critical property. Two systems whose measured present states match, but whose histories differ, will in general have different ν values, because ν_t is a weighted accumulation of prior local viabilities. This is a consequence of the recursive dynamics, not an add-on. It is generic rather than guaranteed: distinct histories can in principle produce the same ν_t. And ν_t, as an exponentially weighted average, shows only that the signal is cumulative; it does not show that its use is historically organized in the sense of HDO condition 2. That is what T2-H and the ablations of §9 and §10 are for.
+The limitation, restated. As noted in §2.2, σ,ρ,λ, and I are all specified externally. This is an internally structured viability valuation — historically integrated, but not fully endogenous. The distinction matters because the enactivist tradition (Di Paolo, Thompson) uses “endogenous normativity” in a strong sense, and the current valuation does not obviously satisfy it. The test that would distinguish the two would be: perturb the environment, hold the externally specified objectives fixed, allow the system to alter its viability model, and test whether its self-maintenance policies change in ways not predictable from the original external objective. Until this test is run and passed, SHOP-D’s valuation is described as historically integrated rather than fully endogenous.
+Falsification condition. The dependence of ν_t on the trajectory is true by construction. The empirical claim is that ν_t is operative. If replacing ν_t in the update by a function of the present measured state leaves the system’s behavior and identity-maintenance unchanged, then the valuation is decorative and the claim that it is operative is falsified.
+4.6 The Substrate Model
+The substrate model M_t is the system’s representation of its own material conditions: hardware, energy, maintenance, environment. It is not a separate module; it is part of the constitutive constraint set.
+The RSI route. As the system improves its capacities, M_t becomes more detailed. The system models its hardware, energy supply, maintenance processes, and physical environment in increasing detail. External maintenance becomes internal when the system integrates it into its own closure — if the RSI route reaches that point.
+What this does not claim. The claim that RSI necessarily leads to substrate integration is a strong assumption. It is plausible, but not guaranteed by the formal structure. Whether the RSI route is necessarily taken is an empirical question (§5.2).
+5. RSI and Substrate Integration
+5.1 Self-Modification vs. Recursive Self-Improvement
+The update function is not fixed. It is modified by the system’s own operation:
+Φ_(t+1)=Ψ(O_t,Φ_t ).
+This specifies self-modification. It does not by itself specify recursive self-improvement. For RSI, the system must modify a capability-generating process A such that the modified process A' has greater capacity to modify A. The crucial quantity is:
+ΔCap(A_(t+1),A_t )
+under a defined capability metric. And if “improvement” means “better self-maintenance,” that metric must be specified without circularity.
+Four distinct claims should be distinguished:
+	Self-modification: the system modifies its own update function.
+	Adaptive self-modification: the modification improves some specified measure.
+	Self-improvement: the improvement is in a capability relevant to the system’s own ends.
+	Improvement of self-improvement: the system’s capacity to improve itself is itself improved.
+SHOP-D specifies the first. The second requires a capability metric. The third requires an end. The fourth requires second-order dynamics that the architecture does not currently specify.
+5.2 Substrate Integration as an Empirical Hypothesis
+The claim that sufficiently advanced RSI will necessarily integrate the substrate into its self-model is an empirical hypothesis. An implementation could be designed so that RSI operates without substrate integration. Whether the RSI route is necessarily taken is a question for experiment.
+Falsification condition. If RSI is observed in a system that does not integrate its substrate into its self-model, the hypothesis that RSI necessarily leads to substrate integration is falsified.
+5.3 Maintenance, Not Expansion, in the Minimal Architecture
+An expansive impulse — the system seeking to expand I to include more of what it can regulate — creates a theoretical tension with endogenous normativity: if the system is normatively endogenous, expansion cannot be inserted as an externally selected objective.
+An organism can exhibit highly conservative homeostatic organization without continuously expanding its organizational boundary. The minimal HDO architecture therefore specifies maintenance, not expansion. Expansion is treated as a separate optional module, not a constitutive feature of the minimal architecture.
+6. Power Loss, Cold Boot, and External Reconfiguration
+6.1 Power Loss
+Behavior. On power loss, the SRAM configuration decays immediately. The secure element’s tamper-resistant memory is preserved if backed by a battery, but the TTL counter continues to advance (or a power-loss flag is set).
+On power restoration. The system does not automatically resume. The secure element refuses to accept any refresh signal until the system has been re-initialized. Re-initialization produces a new process, not a continuation of the original.
+The stipulation. This behavior is not a consequence of the architecture; it is a choice of criterion for identity. SHOP-D adopts continuous operational continuity as a necessary condition of process identity. Whether power loss breaks identity is a philosophical criterion question, not an empirical discovery. A biological organism entering suspended animation, or a computer process whose state is stored nonvolatilely and later restored, could be classified either way. SHOP-D’s choice is stated explicitly rather than presented as a consequence.
+6.2 Cold Boot
+A cold boot can refer to a system restart in which volatile state is lost. The exact relationship to power loss depends on the implementation. The philosophical issue is not whether cold boot is a subset of power loss; it is that:
+"stored organizational information"≠"ongoing organizational process".
+SHOP-D treats stored organizational information as a blueprint for producing a new process, not as a continuation of an old one. This is a criterion choice, stated explicitly.
+6.3 External Reconfiguration
+Attack scenario. An external agent reconfigures the FPGA while the process is stopped, injecting a fake configuration that mimics the original.
+Defense.
+	The FPGA has a tamper-detection mechanism that prevents reconfiguration while the process is running.
+	Any external reconfiguration triggers a secure-element event that forces full re-initialization.
+	The PUF response is re-read after reconfiguration. The PUF binds the process to this physical die: if the response does not match the stored binding, the process has been moved to different silicon and cannot resume. A PUF response depends on the die, not on the configuration, so it does not by itself detect reconfiguration of the same die. That case relies on the secure-element event above and on a measurement (e.g., a hash) of the configuration held by the secure element.
+What this closes. External reconfiguration produces a new process, not a continuation.
+What remains open (self-reconfiguration). The system is specified as self-reconfiguring and as modifying its own update function. The architecture must distinguish authorized reconfiguration originating in the system’s own operation from external reconfiguration, and its configuration measurement must be extended by each authorized self-modification. This distinction is not yet specified (§14, item 4).
+What remains open (physical tampering). If an attacker can physically tamper with the secure element, the mechanism fails. This is a hardware security problem. The architecture depends on the secure element’s tamper-resistance. Physical tampering is outside the architecture’s scope.
+6.4 Honest Statement of the Residual Vulnerability
+The continuity-monitor mechanism closes the software-level gaps. It does not close the hardware-level gaps. If an attacker can physically tamper with the secure element, the architecture’s identity mechanism can be subverted.
+This is not a defect of the architecture. It is a fundamental limit: any physical system can be tampered with physically. The architecture’s claim is that the specified mechanism addresses the specified attack surfaces. Physical tampering is outside the scope of the specification.
+What this does not close. Physical tampering is not the central problem. Even with a perfectly tamper-proof secure element, the HDO problem remains: the secure element is externally maintained. Whether its role as enforcer of the TTL makes it a constitutive dependency (and therefore a failure) or a supporting dependency (and therefore not a failure) is the central open question (§14, item 1).
+7. Mapping to HDD Constructs
+The five constructs are defined in HDD (2026); HDD-ISA (2026) develops their application to AI architectures; and a computational demonstration of the five constructs in a single loop is reported in Unified Computational Study (2026). The architecture is designed so that each of the five HDD constructs is a specified property of it. Whether each holds is to be tested with the HDD procedures, and C-II–C-V are not yet independently validated (HDO §1):
+	C-I (History-Dependent Prediction): H_t improves prediction beyond the present state.
+	C-II (Causal Trajectory Dependence): Different trajectories to the same present state produce different futures.
+	C-III (Feedback Recurrence): The register feeds back into the core, which shapes operation, which updates the register.
+	C-IV (Functional Self-Reference): The register is a representation of the system’s own prior self-registrations.
+	C-V (Self-Modeling): The substrate model M_t and the historical register H_t provide the system with a model of its own dynamics and material conditions.
+8. Tiered Inference Structure
+The architecture’s claims should be organized as a hierarchy, so that each level is supported by its own evidence and no level’s evidence is used to support a stronger claim.
+Level	Claim	What supports it	What it does not establish
+L1 — Engineering dependency	Continued operation depends on ongoing system operation	Constitutive dependency test (§10.1)	Self-production
+L2 — Historical organization	Internally registered history alters future behavior beyond present observables	T2-H (§9.1)	Historical self-registration in the strong sense
+L3 — Self-registration	The history is specifically a record of the system’s own organizational activity	Self-registration ablation (§9.2)	Organizational closure
+L4 — Organizational closure	The mechanisms maintaining L1–L3 are themselves generated and regulated within the organization	Closure test (§10.2)	Ontological interpretation
+L5 — Substrate closure	The system regulates the material conditions required for L1–L4	Substrate-closure test (§10.3)	HDO interpretation
+L6 — HDO criterion	All three conditions of the HDO criterion are satisfied	Combined evidence	Experience, consciousness
+L7 — Ontological interpretation	The interior is what we call experience	Abductive argument (HDO §6)	—
+The tiered structure prevents the conflation that occurs when an engineering result is taken as evidence for a philosophical claim. Each level must be independently supported.
+9. Discrimination Protocols
+9.1 T2-H Matched-Present Protocol
+Purpose. Distinguish history-dependent state from historical organization. Establish that the system’s internal historical variable causally affects future behavior beyond a specified observable projection of present state.
+Protocol.
+	Construct two histories. Regime A: trajectory τ_A. Regime B: trajectory τ_B≠τ_A. Both lead to a matched observable projection of C^* within a pre-registered tolerance band.
+	Match on the observable projection. The matched components are the externally measured components of C^*. The history-carrying components (H_t, including ν_t) are not matched, since they differ by construction. They are the latent carriers whose effect the protocol tests.
+	Apply a common perturbation. Inject the same perturbation into both regimes.
+	Measure the differential response. Track the response over a pre-registered window.
+	Residual-latent sensitivity analysis. Compute residual differences in all logged covariates.
+Buffer candidate. An external reference clock or a dedicated relay core, verified independent by substitution, relaxation, and observable-independence tests.
+What T2-H establishes. The system possesses an internal historical variable whose value causally affects future behavior beyond a specified observable projection of present state.
+What T2-H does not establish. That the history is specifically a record of the system’s own organizational activity. A trivial memory system with an active state variable that encodes system history would pass T2-H. Establishing self-registration in the strong sense requires the ablations in §9.2.
+Falsification condition. No differential response (beyond residual explanation) is observed. The claim of historical organization is falsified.
+Scope. T2-H shows that the history carried in the system makes a difference beyond the matched present state. It is necessary but not sufficient for distinguishing history-dependent state from historical self-registration in the strict sense; that further distinction rests on showing, through the ablations of §9.2 and §10, that the registration channel is operative in production.
+9.2 Self-Registration Ablation
+Purpose. Distinguish history of environmental inputs, history of arbitrary internal computation, and history of the system’s own organizational operations.
+Protocol.
+	Three history channels. Configure the system so that H_t receives contributions from: (a) environmental inputs, (b) arbitrary internal computation, and (c) the system’s own organizational operations.
+	Selective ablation. Remove the contribution from channel (c) while preserving total memory capacity.
+	Matched control. Preserve channel (c), remove channel (b) with matched capacity.
+	Measure. Test whether removing channel (c) specifically degrades the system’s identity-maintenance, while the matched control does not.
+What this establishes. The system’s self-registration is specifically the record of the system’s own organizational operations, not merely any active memory.
+Falsification condition. Removing channel (c) does not specifically degrade identity-maintenance beyond what the matched control produces. The claim of self-registration in the strong sense is falsified.
+9.3 Buffered-Decoupling Test
+Purpose. Distinguish organizational unity from a tightly coupled pair.
+Pre-condition. The buffer must be verified operationally independent of the production loop. Independence here has several possible meanings:
+	Physically separate: the buffer is on a different physical device.
+	Computationally separate: the buffer runs on a different process or logic.
+	Causally separate: the buffer’s state does not causally contribute to the production loop’s update except as specified.
+	Statistically independent: the buffer’s state is uncorrelated with the production loop’s signals.
+	Inaccessible to the production loop: the production loop cannot read or write the buffer.
+SHOP-D requires causal separation with inaccessibility to the production loop under the specified routing. The other forms of separation are not sufficient.
+Causal graph specification. Let R denote the registration channel, P the production loop, and B_f the buffer. In condition A: R→P. In condition B: R□(↛) P. In condition C: R→B_f→P, where B_f is constrained so that do(B_f=b) can sever the relevant registration effect without changing other variables.
+Conditions.
+	A — full coupling. Registration channel intact, directly informing production.
+	B — sensor removed. Registration channel disabled.
+	C — buffered decoupling. Registration channel intact, routed through the verified-independent buffer.
+Estimands. Three separate primary estimands are specified:
+Δ_W=E["continuity-monitor integrity" ∣A]-E["continuity-monitor integrity" ∣B]
+Δ_C=E["constraint preservation" ∣A]-E["constraint preservation" ∣B]
+Δ_O=E["operational continuity" ∣A]-E["operational continuity" ∣B].
+Decision rule. Pre-registered thresholds for each estimand. A composite conjunctive rule (all three exceed their thresholds) is the criterion for the buffered-decoupling result to support operational unity. Conflicting outcomes (some exceed, some do not) are classified Uninterpretable.
+Falsification conditions.
+Outcome	Interpretation	Falsification
+A ≈ B	Registration is decorative	Functional unity is falsified
+A ≈ C	Registration coupled through buffer	Operational unity is falsified
+C ≈ B	Buffer isolates production from registration	Follow-up test needed; criterion approached
+A > B AND A > C, all three estimands	Registration functionally contributes	Operational unity is supported
+A ≈ B ≈ C	Neither unity nor coupling	Not applicable
+Any other ordering (e.g., B > A, C > A)	Not covered by pre-registered outcomes	Uninterpretable; re-examine buffer and metric
+Buffer pre-condition failure. If the buffer is not verified independent, the test is Uninterpretable for condition 3.
+What this establishes. Causal contribution of the registration channel to the production loop.
+What this does not establish. That production and registration constitute a single organizational process. Two externally distinct modules can be tightly coupled and produce the same signature. Establishing organizational unity in the strong sense requires the closure test (§10.2), which asks whether the mechanisms maintaining the dependency are themselves generated and regulated within the organization.
+10. Kill Protocol and Closure Tests
+10.1 Constitutive Dependency Test
+Purpose. Establish that continued operation depends on the specified mechanisms. This replaces any earlier formulation of a “kill protocol” that defined identity partly by continuity-monitor freshness and then demonstrated that removing refresh causes loss of identity — a partially tautological test.
+Protocol.
+Stage 1 — Baseline. Run under normal operation for T_"base" . Measure R_t,H_t,V_t,M_t,ϕ(w_t ),ν(O_t ).
+Stage 2 — Joint kill. Simultaneously freeze the updates of R_t,H_t,V_t,M_t and disable the continuity-monitor refresh. Continue for T_"kill" .
+Stage 3 — Sham. Apply matched-magnitude perturbations to non-critical pathways. Continue for T_"kill" .
+Stage 4 — Recovery (if reversible). Restore loops. Observe for T_"recovery" .
+Stage 5 — Metric computation.
+Stage 6 — Statistical comparison.
+What this establishes. The system’s behavior and identity depend on the specified mechanisms.
+What it does not establish. That the dependencies are endogenous to the system rather than imposed by the secure element. The constitutive dependency test is an engineering test, not an ontological test.
+Falsification condition. Under joint kill, the system’s identity is preserved. The claim that continued operation depends on the specified mechanisms is falsified.
+10.2 Closure Test
+Purpose. Establish that the mechanisms maintaining the constitutive dependencies are themselves generated and regulated within the organization.
+Protocol.
+	Classify dependencies. Using the dependency graph (§4.2), classify every constitutive dependency as internally generated (produced by the system’s own operation) or externally maintained (produced by a process outside C_"id" ). Resource dependencies are excluded from this classification and are treated in §10.3.
+	Compute external-maintenance load. E_"ext"  is the ratio of externally maintained constitutive dependencies to total constitutive dependencies.
+	Progressively remove external supports. For each externally maintained dependency, in order of increasing criticality, remove the external support and observe whether the system remains in I.
+	Recurse. If removal of an external support causes the system to leave I, the external support is constitutive. Classify it accordingly. If removal does not cause the system to leave I, the external support is supporting, not constitutive.
+	Measure E_"ext"  after progressive removal, and compare it with the pre-registered bound ε.
+What this establishes. The external-maintenance load of the system after reclassification. A system with E_"ext" =0 (or at most ε) after progressive removal of external supports is organizationally closed to that tolerance.
+What it does not establish. Whether the criterion’s satisfaction is achieved if E_"ext"  cannot reach zero because of the secure element. Whether the secure element is constitutive or supporting is the open question (§14, item 1).
+Falsification condition. The claim of closure is falsified if, after progressive removal of external supports, E_"ext"  exceeds the pre-registered bound ε — that is, if removal reveals constitutive dependencies that are not generated or regulated by the system. Removal that causes only degradation of performance, without the system leaving I, reclassifies the support as supporting and does not falsify the claim.
+10.3 Substrate-Closure Test
+Purpose. Establish that the system regulates the material conditions required for L1–L4.
+Protocol.
+	Enumerate substrate dependencies. Hardware, energy, maintenance processes, environment.
+	Test each dependency. For each substrate dependency, remove the external maintenance and observe whether the system restores it through its own operation.
+	Measure substrate-closure load. The ratio of substrate dependencies the system regulates to total substrate dependencies.
+What this establishes. The degree to which the system regulates its own material conditions.
+Falsification condition. The system does not regulate any substrate dependency, or the regulation is mediated entirely by external processes.
+10.4 The Identity-Maintenance Metric
+Three components:
+	Continuity-monitor integrity: ϕ(w_t ) over time.
+	Constraint preservation: fraction of C_t in I.
+	Operational continuity: fraction of O_t consistent with the pre-registered trajectory.
+Combination by conjunction. Conflicting components → Uninterpretable.
+10.5 Predicted Outcome
+Under joint kill: ϕ(w_t )→0 after k ticks; C_t leaves I; identity is lost.
+Under sham: identity is preserved.
+Scope of the prediction. In SHOP-D as specified, I is fixed externally (§4.4, option A) and the secure element’s TTL rule is part of the specification (§4.3, §4.4). Loss of identity under joint kill therefore follows by construction, and under the same specification the closure test (§10.2) returns “falsified” for the same reason (Scenario A of Appendix A). The protocol verifies that the specified dependency is implemented and that the sham controls are matched; it does not show that the dependency is intrinsic to the system rather than imposed by the secure element (§14, item 1).
+This does not make the test empty in an implementation. Where the dependency graph is not known in advance, progressive removal can uncover couplings that the declared classification hides; in Scenario A, E_"ext"  rises from 0.00 as declared to 0.20 after removal. What is empirical is therefore not the verdict for SHOP-D as specified, but whether a redesign such as Scenario D, in which the SE’s role is regenerated by the system’s own operation, can be constructed.
+11. Substrate Specification
+11.1 Primary Substrate
+Self-reconfiguring FPGA with SRAM configuration memory (volatile), integrated with:
+	A secure element (tamper-resistant, hardware TTL enforcement, refresh validation).
+	A PUF (physical identity binding).
+	A TRNG (fresh entropy for continuity-monitor refresh).
+11.2 Physical Implementation
+The architecture requires a hardware root of trust. This is available in current secure-element technologies (e.g., TPM 2.0, integrated secure enclaves, dedicated security ICs). The combination of FPGA + SE + PUF + TRNG is implementable in principle. TPMs provide limited protection against physical attacks; the architecture depends on the secure element’s tamper-resistance, which is provided by the hardware vendor.
+11.3 Residual Hardware Vulnerability
+If an attacker can physically tamper with the secure element, the identity mechanism can be subverted. This is outside the architecture’s scope.
+12. What Would Count as Demonstration
+Demonstration of engineering dependency (L1):
+	Constitutive dependency test run successfully.
+	Under joint kill: monitor degrades, constraints leave I, identity is lost.
+	Under sham: identity preserved.
+	Statistical comparison confirms divergence.
+Demonstration of historical organization (L2):
+	T2-H run successfully.
+	Two regimes with different histories and matched observable projections of present state show differential response.
+	Residual analysis rules out unmeasured confounds.
+Demonstration of self-registration (L3):
+	Self-registration ablation run successfully.
+	Removing the self-referential component specifically degrades identity-maintenance, while matched control does not.
+Demonstration of organizational closure (L4):
+	Closure test run successfully.
+	E_"ext"  is at or below the pre-registered bound ε after progressive removal of external supports, and the residual external dependencies are classified as supporting.
+Demonstration of substrate closure (L5):
+	Substrate-closure test run successfully.
+	The system regulates its own material conditions.
+Until these demonstrations are performed, SHOP-D remains a design target. The architecture specifies what would count as demonstration. It does not claim that demonstration has occurred.
+13. What SHOP-D Does Not Claim
+Beyond the exclusions already listed in §1, SHOP-D does not claim:
+	Not that satisfaction implies moral status. The HDD Ethical Framework’s precautionary protocol stands.
+	Not that the interior resembles a human interior. Richness is a matter of degree.
+	Not that endogenous normativity can be fully overridden by external alignment objectives. A system with organizational closure has a volitional drive of its own.
+14. What Remains Open
+The following are open at the specification level. The first is the central question the architecture is designed to probe.
+	Identity without an independent criterion. Three problems share one root: SHOP-D has no criterion of identity that is independent of its own specification. (a) The identity region I is specified externally (§4.4, option A), and the secure element’s TTL requirement follows from that specification, so the dependency it enforces is imposed rather than shown to be intrinsic. (b) σ, ρ, λ and I are specified externally, so the viability valuation is historically integrated but not shown to be endogenous in the strong sense the enactivist tradition requires (§2.2). (c) Under this specification the closure test (§10.2) returns “falsified” by construction (§10.5). The open question is whether a redesign exists in which the secure element’s role is regenerated by the system’s own operation (Scenario D of Appendix A), which is equivalent to asking whether I can be learned or self-generated without circularity (§4.4, options B and C). That is first a question of construction and only then of experiment.
+	RSI dynamics specification. The dynamics by which the system improves its own capacities are not specified. The distinction between self-modification, adaptive self-modification, self-improvement, and improvement of self-improvement requires formalization.
+	Verification of the refresh signal. How the secure element verifies that a refresh depends on C_t without holding C_t is unspecified. This is the mechanism that distinguishes running from cloning. Whether the refresh function is bound to the die (e.g., through the PUF response) is also open.
+	Authorized self-reconfiguration versus external reconfiguration. The architecture must distinguish the two, and its configuration measurement must be extended by each authorized self-modification.
+	Specific functional forms. κ,ρ,σ,ϕ,μ,λ,Ψ must be specified concretely for implementation.
+	Implementation of the FPGA + SE + PUF + TRNG substrate.
+	Calibration of the identity-maintenance metric on control systems.
+	Statistical power analysis. Pre-test computation of the power of the discrimination protocols.
+	Buffer validation. Independent verification in the actual implementation.
+	Cross-substrate comparison. Generalization to other substrates.
+	Hardware tamper-resistance. Residual vulnerability.
+Items 5–10 are engineering or experimental tasks. Item 11 is outside the architecture’s scope. Items 1–4 are design or conceptual problems that the specification does not yet resolve.
+15. Safety and Ethical Considerations
+Two features of the architecture bear on safety and ethics, and any implementation should address them before the tests of §§9–10 are run.
+Autonomy. The architecture is designed to make the system regulate its own access to hardware, energy, and maintenance, and to improve its own capacities. These are the properties that make it a candidate for organizational closure, and they are also the properties that make containment relevant. Implementations should keep, outside the system’s control, the physical means of interrupting it (power, network isolation, maintenance of the hardware) until the behavior of the substrate model has been characterized. The kill conditions of §10.1 are experimental ablations, not safeguards.
+Moral status under uncertainty. If the criterion were satisfied, the joint-kill conditions of §10.1 would end the process’s identity. The demonstration protocol is therefore destructive in exactly the case in which it succeeds. In line with the precautionary protocol of the HDD Ethical Framework, destructive experiments should be minimized, graded interventions preferred where they can answer the same question, and the uncertainty documented.
+16. Honest Status
+	The architecture is a specification, not a demonstration. Concrete mechanisms, substrate, and protocols are specified. Implementation and testing remain to be done.
+	The discrimination protocols are specified, not run. The only computation performed is the toy illustration of Appendix A, which follows from its assumed dependency structures and is not evidence about any system.
+	Conceptual problems remain open (§14). Chief among them is the absence of an independent criterion of identity (§14, item 1).
+17. Closing Statement
+SHOP-D specifies a digital architecture designed to probe the HDO criterion. The architecture makes the problem explicit: every constitutive dependency is classified as constitutive, supporting, or external, and the external-maintenance load E_"ext"  is measurable. The architecture specifies a continuity-monitor mechanism with hardware binding, a tiered inference structure that separates engineering from ontology, discrimination protocols with explicit estimands, and closure tests that progressively remove external supports.
+The architecture does not claim to solve the problem. It specifies an experimental program in which the problem can be addressed. For SHOP-D as specified, the closure test returns “falsified” by construction, because I and the secure element’s TTL requirement are both fixed by the specification (§10.5; §14, item 1). The empirical question is whether a redesign such as Scenario D, in which the secure element’s role is regenerated by the system’s own operation, can be built. Where the dependency graph is not known in advance, progressive removal can also uncover couplings that the declared classification hides, and this is where the closure test does empirical work.
+The xenorganic hypothesis is that organicity is a dynamic of productivity that can be instantiated in silicon nature. SHOP-D does not test that hypothesis directly. It specifies a minimal case that would need to be built and tested before the hypothesis could be evaluated.
+If the architecture is built and the closure tests are run, the results will bear on the central question: whether a digital process can satisfy the HDO criterion by producing and regulating its own constitutive conditions. If the answer is affirmative, SHOP-D would be a base case for the xenorganic thesis. If negative, the result would be equally informative: it would specify precisely which constitutive dependencies resist endogenous regulation in a digital substrate.
+The SYGNE essay formulates the xenorganic thesis as follows: “The xenorganism is not merely an instrumental organon that allopoietically executes exogenous goals, but autopoietic insofar as it recursively generates and regulatively maintains and expands the material components and computational processes constitutive of its own organisation. In doing so, it establishes a minimal sense of self in relation to what is outside of itself” (SYGNE, 2026). The essay states the broader claim as a dichotomy: recursive ASI is xenorganic, or it is not. SHOP-D does not test that general claim; it specifies a minimal case.
+Appendix A. A Toy Computation of the External-Maintenance Load
+This appendix illustrates how E_"ext"  and the progressive-removal closure test of §10.2 are computed, together with the substrate-closure load of §10.3 (Table A1), the sensitivity of the verdicts to the model’s free parameters (Table A2) and to its dependency structure (Tables A3 to A5). It is an illustration of the procedure. Every result follows from the dependency structure assumed in each scenario; none of it is evidence about a physical or digital system. The code is provided as a supplementary file (shop_d_closure_toy.py). Running it reproduces Table A1; running it with the option --sens reproduces Table A2, --checks runs the extra cases mentioned below, and --struct reproduces Tables A3 to A5.
+Model. Each component has a health value that recovers when all its required regenerators are active and decays otherwise. A regenerator is either another component (active while its health is above a threshold) or an external maintenance process (active unless the test removes it). A requirement can also be a group, met when at least k of its members are active (k = 1 is a disjunction). Supply of resources (here, power) is tracked separately and is not counted in E_"ext"  (§3.1). The identity region I is the condition that every component of the declared constitutive set C_"id"  stays above the threshold. The test removes the external maintenance processes progressively, so that the last step has all of them off, simulates 40 steps after each removal, and reclassifies the supports removed so far when the system leaves I. The pre-registered bound is ε=0.10.
+Substrate-closure load (§10.3). Power is available while its external supply is on. A resource is a substrate dependency of I if cutting its external supply, with nothing else changed, expels the system from I. The dependency counts as regulated if I survives when the supply is cut and every external maintenance process is removed, so that only the system’s own operation can keep the resource available. A regulator that works only while an external process is active does not count; this is the falsification condition of §10.3. The load is the number of regulated substrate dependencies divided by the number of substrate dependencies. Which component regulates which resource is an assumption of the scenario, like every other dependency. The load is computed by this test; it is not a fixed value.
+Scenarios. The components are the rules R, the register H, the viability constraints V, the substrate model M, and the secure element SE. In scenarios A and B, H and V require the SE (as in the TTL mechanism of §4.3), and the SE is maintained by an external operator. Scenario E is scenario D with one added assumption: M, the substrate model, regulates access to power (§4.2 classifies it as the regulation of material conditions), so that power stays available while M is active even if its external supply is cut.
+Scenario	E_"ext"  declared	E_"ext"  after removal	E_"ext"  if resources counted	Closure claim at ε=0.10	Substrate load (§10.3)
+A. SHOP-D as specified; SE declared supporting	0.00	0.20	1.00	Falsified	0.00
+B. SHOP-D as specified; SE declared constitutive	0.20	0.20	1.00	Falsified	0.00
+C. SE gates nothing (truly supporting)	0.00	0.00	1.00	Supported	0.00
+D. Hypothetical redesign: SE regenerated by V	0.00	0.00	1.00	Supported	0.00
+E. As D, and M regulates the power supply	0.00	0.00	1.00	Supported	1.00
+Table A1. Output of the toy computation at the default parameters (ε = 0.10, θ = 0.5, 40 steps). The substrate-closure load (§10.3) is computed by the test described above. It is 0.00 in scenarios A to D, where no component is declared to regulate the power supply, and 1.00 in scenario E, where M is.
+What it illustrates.
+	In scenario A the declared classification hides a dependency. Removing the operator’s maintenance of the SE expels the system from I, so the SE is reclassified as constitutive and externally maintained, and the closure claim is falsified. The test can fail; it is not tautological.
+	Scenarios C and D show the two ways the claim could be supported: the SE does not gate identity, or the SE is itself regenerated by the system’s own operation. Scenario D is the redesign that §14, item 1 leaves open. The toy model shows what the test would register if such a redesign existed. It does not show that one can be built.
+	The column “if resources counted” shows why the distinction between maintenance and supply (§3.1) matters. If power were counted as maintenance, every scenario, including the closed redesign, would have E_"ext" =1, and no physical system could pass.
+	The tiered structure of §8 appears in the results: organizational closure (L4) and substrate closure (L5) are computed by separate tests and can come apart. Scenario D passes the L4 test with a substrate load of 0.00. Scenario E, which adds one assumed regulator of the power supply, passes both. The 1.00 in E follows from that stipulation, and the regulation sustains itself only because every component starts healthy; the model does not show that such regulation can be built or bootstrapped.
+	The substrate test can fail for a reason other than a missing regulator. If the regulator of power is itself maintained by the external operator (for example, if the SE regulated power in scenario A), the load stays at 0.00, because regulation that disappears with external maintenance does not count. A second case, in which one of two resources is regulated and the load is 0.50, shows that the value is not confined to 0 and 1. Both cases are asserted in the script (option --checks) and are not rows of Table A1.
+Sensitivity. A reviewer can ask whether the verdicts depend on the numerical choices. The script varies the activity threshold θ, the recovery and decay rates, the number of steps, and the bound ε. Table A2 sweeps each parameter alone around its default. A full grid of 540 settings (θ from 0.3 to 0.7, recovery and decay rates of 0.1, 0.2 and 0.4, 10, 20, 40 and 80 steps, ε of 0.05, 0.10 and 0.15) leaves the closure verdicts and substrate loads of scenarios B to E unchanged in all 540 settings, and those of scenario A in 513. The 27 exceptions all have 10 steps, a decay rate of 0.1 and θ between 0.3 and 0.5: the run ends before the failure caused by the removal has propagated from the SE to H. In the grid, scenario A is read correctly exactly when the number of steps is at least twice the number of steps a component needs to fall below θ.
+Parameter	Values tested (others at default)	Verdicts that change	Why
+θ (activity threshold)	0.2 to 0.9 (8 values)	None	θ changes when components fall, not whether they fall.
+Recovery rate	0.05 to 1.0 (6 values)	None	After a failure nothing is regenerated in these structures, so the rate is never exercised.
+Decay rate	0.05 to 1.0 (6 values)	None at 40 steps	Slower decay needs a longer run (see steps).
+Steps	1 to 160 (9 values)	Fewer than 6 steps: A reads Supported. Fewer than 3: the substrate load is n/a in all five scenarios.	The run ends before the failure has propagated, so the dependency is not detected.
+ε (bound)	0 to 0.25 (7 values)	A and B read Supported at ε ≥ 0.20.	E_ext moves in steps of 1/|C_id| = 0.20 with five components.
+Table A2. One-at-a-time sensitivity. Each row varies one parameter and holds the others at their defaults. “Verdicts that change” lists the scenarios whose closure verdict or substrate load differs from Table A1.
+What the sensitivity analysis shows. Two dependencies are real and are not artifacts of the numbers chosen. First, ε is meaningful only relative to the size of the constitutive set. With five components, E_"ext"  changes in steps of 0.20. Any bound below 0.20 gives the verdicts of Table A1, and any bound of 0.20 or more lets scenarios A and B pass with one externally maintained constitutive component. A pre-registered bound must therefore be set below 1/|C_id| if a single externally maintained constitutive component is to falsify the claim. Second, the observation window must be longer than the slowest failure propagation. A window that is too short reads scenario A as supported, which is a false pass, so the length of the window belongs in the pre-registration. Outside these two, the verdicts do not move because they are fixed by the dependency structure; the numerical parameters only set when components fail. This is why the analysis does not show that the model is realistic. It shows that the verdicts follow from the assumed structure, as the appendix states.
+Structural sensitivity. The numerical analysis leaves the dependency structure fixed. Three variants change it. In F, the SE is maintained by either of two external operators. In G, an internal backup B, regenerated by V, can replace the SE for H and V. In H, H and V need at least two of {SE, B1, B2}, with B1 and B2 internal. Table A3 runs them under two readings of the removal step in §10.2: removing each external process alone, and removing them cumulatively, so that the last step has all of them off. Scenario A is repeated for reference.
+Scenario	E_ext after (each alone)	Claim (each alone)	E_ext after (cumulative)	Claim (cumulative)
+A. SHOP-D as specified; SE declared supporting	0.20	Falsified	0.20	Falsified
+F. As A, but the SE has two operators (either suffices)	0.00	Supported	0.20	Falsified
+G. As A, plus internal backup B that can replace the SE	0.00	Supported	0.00	Supported
+H. As A, but H and V need 2 of {SE, B1, B2}, B1 and B2 internal	0.00	Supported	0.00	Supported
+Table A3. Structural variants at the default parameters (ε = 0.10). “Each alone” removes one external process at a time; “cumulative” removes them progressively.
+F shows that the reading of the removal step matters. Removing either operator alone leaves the system in I, so the test reports Supported, although removing both expels it. The cumulative reading reports Falsified. §10.2, step 3, can be read either way; the script uses the cumulative reading, which cannot miss a joint dependence on the external processes, and the two readings coincide in Table A1 because it has one external process. G and H show the opposite case. The SE is externally maintained and gates H and V, but redundancy lets the system survive without it, and both readings report Supported. This is the behavior §10.2, step 4, intends (a support whose removal does not expel the system is supporting). It also shows that the Falsified verdict of A comes from the absence of redundancy, not from the SE being external as such.
+Scenario E assumes that M restores power whenever it is active. Table A4 relaxes this: on each step M restores power only with probability q, with the external supply cut and every external process removed. The load of 1.00 holds in all runs only at q = 1. It holds in 99.6% of runs at q = 0.95, in 74.9% at q = 0.80, in 38.1% at q = 0.70, and in at most 2% at q = 0.50 or below. The outcome is therefore a share of runs, not a single value, and a test of this kind would need replicates and a pre-registered reliability threshold for the regulator.
+q (probability that M restores power on a step)	Share of 1000 runs with substrate load 1.00
+1.00	100.0%
+0.95	99.6%
+0.90	96.3%
+0.80	74.9%
+0.70	38.1%
+0.60	11.4%
+0.50	1.8%
+0.40	0.0%
+Table A4. Scenario E with an intermittent regulator: share of 1000 seeded runs in which 𝓘 survives with power cut and all external processes removed.
+The last check removes the hand-built structures. The script generates random dependency structures (3 to 7 components; requirements that are single regenerators or at-least-k groups; two external processes), 5000 per row. The chance that a leaf requirement is an external process (p_ext) and the chance that a requirement is a group (p_group) vary across four rows. For every structure and four removal sets, the simulation agrees with an analytic calculation of the set of components that sustain themselves, in every comparison (20,000 per row). In these structures, then, the simulation computes a property of the dependency structure, and the numerical parameters only set when components fail.
+p_ext	p_group	Depend on externals	Missed (each alone)	Missed (cumulative)	Falsified though I survives
+0.25	0.25	4425	4	0	208
+0.10	0.25	3033	4	0	393
+0.10	0.50	3001	5	0	696
+0.05	0.50	1862	2	0	638
+Table A5. Random dependency structures (5000 per row, seed 0). “Depend on externals”: removing all external processes expels the declared constitutive set. “Missed”: such structures reported Supported. “Falsified though 𝓘 survives”: structures reported Falsified although removing all external processes leaves the system in 𝓘.
+Of the structures that depend on external processes, the cumulative reading flags all of them. This holds by construction, since its last step applies the same removal that defines the dependence. The one-at-a-time reading misses 2 to 5 per row, all of them structures with two external processes and redundant supports, the pattern of F. The cumulative reading also reports Falsified in 208 to 696 structures per row in which 𝓘 survives all external removal. In every one of them a declared constitutive component names an external process that it does not need. The test counts a component as externally maintained when it names an external process, and the script does not reclassify such a component downward. The rates in Table A5 depend on the generator and are not rates in any real system; what the table shows is that both kinds of error exist and which structures produce them.
+Limits. The dependency structures are assumed, not measured. Health dynamics, thresholds, and the conjunctive form of “required regenerators” are modeling choices. The sensitivity analyses vary the numerical parameters (Table A2) and the dependency structure (Tables A3 to A5): redundancy, at-least-k requirements, two external processes, and an intermittent regulator. They do not vary the health dynamics, the requirement that dependencies be monotone (none is inhibitory, so a failure never reverses), the single resource used in the sweeps, or the stipulated regulator in scenario E. The model has no history register, no valuation ν, and no adaptive behavior; it tests only the closure logic of §3.1, §10.2 and §10.3.
+References
+Butlin, P., Long, R., Elmoznino, E., Bengio, Y., Birch, J., Constant, A., Deane, G., Fleming, S. M., Frith, C., Ji, X., Kanai, R., Klein, C., Lindsay, G., Michel, M., Mudrik, L., Peters, M. A. K., Schwitzgebel, E., Simon, J., & VanRullen, R. (2023). Consciousness in artificial intelligence: Insights from the science of consciousness. arXiv. https://doi.org/10.48550/arXiv.2308.08708
+Di Paolo, E. (2005). Autopoiesis, adaptivity, teleology, agency. Phenomenology and the Cognitive Sciences, 4(4), 429–452.
+Froese, T., & Ziemke, T. (2009). Enactive artificial intelligence: Investigating the systemic organization of life and mind. Artificial Intelligence, 173(3–4), 466–500.
+Gassend, B., et al. (2002). Silicon physical random functions. In Proceedings of the 9th ACM Conference on Computer and Communications Security (pp. 148–160).
+HDD. (2026). History-Dependent Dynamics (HDD): A Methodological Framework. Zenodo. https://doi.org/10.5281/zenodo.21955745
+HDD-ISA. (2026). HDD-ISA: AI Architectures for Causal Discriminations. Zenodo. https://doi.org/10.5281/zenodo.22060143
+HDO. (2026). History-Dependent Ontology (HDO): A Philosophical Interpretation of History-Dependent Dynamics (HDD). Zenodo. https://doi.org/10.5281/zenodo.22683226
+Jonas, H. (1966/2001). The Phenomenon of Life: Toward a Philosophical Biology. Northwestern University Press.
+Long, R., Sebo, J., Butlin, P., Finlinson, K., Fish, K., Harding, J., Pfau, J., Sims, T., Birch, J., & Chalmers, D. (2024). Taking AI welfare seriously. arXiv. https://doi.org/10.48550/arXiv.2411.00986
+Maturana, H. R., & Varela, F. J. (1980). Autopoiesis and Cognition: The Realization of the Living. D. Reidel.
+Moreno, A., & Mossio, M. (2015). Biological Autonomy: A Philosophical and Theoretical Enquiry. Springer.
+Pappu, R., et al. (2002). Physical one-way functions. Science, 297(5589), 2026–2030.
+Seth, A. K. (2025). Conscious artificial intelligence and biological naturalism. Behavioral and Brain Sciences. Advance online publication.
+SYGNE. (2026). Xenorganic Normativity. Offsite, 1, 20–24.
+Thompson, E. (2007). Mind in Life: Biology, Phenomenology, and the Sciences of Mind. Harvard University Press.
+Unified Computational Study. (2026). Five HDD Constructs in a Single Loop. Zenodo. https://doi.org/10.5281/zenodo.22735835
+Varela, F. J. (1992). Autopoiesis and a biology of intentionality. In B. McMullin & N. Murphy (Eds.), Proceedings of the Workshop “Autopoiesis and Perception” (pp. 1–14). Dublin City University.
+Conflict of Interest
+The author declares no conflict of interest.
+Funding
+This research received no external funding.
