@@ -3,6 +3,7 @@ A Methodological Framework for Disentangling History Dependence, Recurrence, Sel
 Author: Taotuner
 Main DOI: https://doi.org/10.5281/zenodo.21955745
 License: CC BY 4.0
+Blog: https://independentresearchs.blogspot.com/
 
 What this repository is
 HDD (History-Dependent Dynamics) is a falsifiable methodological framework for disentangling five inferential claims that are frequently conflated across disciplines:
